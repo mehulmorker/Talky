@@ -4,7 +4,7 @@ import { MainChatArea } from "./MainChatArea";
 
 export const Chat = () => {
   return (
-    <div className="flex min-h-full">
+    <div className="flex h-full">
       <LeftSidebar />
       <MainChatArea />
     </div>
