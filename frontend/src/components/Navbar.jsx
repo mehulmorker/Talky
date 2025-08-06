@@ -6,7 +6,7 @@ export const Navbar = ({ navbarRef }) => {
   return (
     <nav
       ref={navbarRef}
-      className="bg-white flex justify-between items-center py-4 px-6"
+      className="bg-white flex justify-between items-center py-4 px-6 border-gray-200 border-b-2"
     >
       <div className="flex items-center">
         {/* logo */}
@@ -30,7 +30,7 @@ export const Navbar = ({ navbarRef }) => {
           {/* logout btn */}
           <button
             onClick={logout}
-            className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors"
+            className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors cursor-pointer"
           >
             Logout
           </button>
