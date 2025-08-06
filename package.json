@@ -1,0 +1,27 @@
+{
+  "name": "chat-application",
+  "version": "1.0.0",
+  "description": "Real-time chat application with React, Node.js, and Socket.IO",
+  "main": "index.js",
+  "scripts": {
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "server": "cd backend && npm run dev",
+    "client": "cd frontend && npm run dev",
+    "install-all": "npm install && cd backend && npm install && cd ../frontend && npm install",
+    "build": "cd frontend && npm run build",
+    "start": "cd backend && npm start"
+  },
+  "keywords": [
+    "chat",
+    "react",
+    "socket.io",
+    "node.js",
+    "vite"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "concurrently": "^9.2.0",
+    "socket.io-client": "^4.8.1"
+  }
+}
