@@ -1,5 +1,6 @@
 import React from "react";
 import { UserSearch } from "./UserSearch";
+import { LeftSidebarSearch } from "./LeftSidebarSearch";
 
 export const LeftSidebar = () => {
   return (
@@ -8,7 +9,7 @@ export const LeftSidebar = () => {
       <UserSearch />
 
       {/* User Search Modal */}
-
+      <LeftSidebarSearch/>
       {/* Search Bar */}
       {/* Conversations List */}
     </div>
