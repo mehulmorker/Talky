@@ -10,10 +10,6 @@ export const Chat = () => {
 
   const fetchConversations = async () => {
     try {
-      console.log({
-        user,
-        token,
-      });
       const res = await fetch("http://localhost:5001/api/chat/conversations", {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -39,7 +35,11 @@ export const Chat = () => {
 
   return (
     <div className="flex h-full">
-      <LeftSidebar conversations={conversations} />
+      <LeftSidebar
+        conversations={conversations}
+        setSelectedChat={setSelectedChat}
+        selectedChat={selectedChat}
+      />
       <MainChatArea selectedChat={selectedChat} />
     </div>
   );
