@@ -14,6 +14,7 @@ export const useAuth = () => {
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(TokenStorage.getToken());
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     verifyToken();
@@ -22,6 +23,7 @@ export const AuthProvider = ({ children }) => {
   const verifyToken = async (retryCount = 0) => {
     const storedToken = TokenStorage.getToken();
     if (!storedToken) {
+      setLoading(false);
       return;
     }
 
@@ -62,6 +64,10 @@ export const AuthProvider = ({ children }) => {
       // Only remove token after multiple failed attempts
       TokenStorage.removeToken();
       setToken(null);
+    } finally {
+      if (retryCount === 0) {
+        setLoading(false);
+      }
     }
   };
 
@@ -83,6 +89,7 @@ export const AuthProvider = ({ children }) => {
     login,
     logout,
     isAuthenticated: !!token,
+    loading,
   };
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
