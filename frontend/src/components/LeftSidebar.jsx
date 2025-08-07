@@ -3,7 +3,7 @@ import { UserSearch } from "./UserSearch";
 import { LeftSidebarSearch } from "./LeftSidebarSearch";
 import { Conversations } from "./Conversations";
 
-export const LeftSidebar = () => {
+export const LeftSidebar = ({ conversations }) => {
   return (
     <div className="bg-white w-80 border-r border-gray-200 flex flex-col">
       {/* Header with action buttons: User Search Button & Model*/}
@@ -11,7 +11,7 @@ export const LeftSidebar = () => {
       {/* Search Bar */}
       <LeftSidebarSearch />
       {/* Conversations List */}
-      <Conversations/>
+      <Conversations conversations={conversations} />
     </div>
   );
 };

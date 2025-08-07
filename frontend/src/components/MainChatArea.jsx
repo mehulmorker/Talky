@@ -1,7 +1,6 @@
-import React from 'react'
+import React from "react";
+import { WelcomeChatScreen } from "./WelcomeChatScreen";
 
-export const MainChatArea = () => {
-  return (
-    <div>MainChatArea</div>
-  )
-}
+export const MainChatArea = ({ selectedChat }) => {
+  if (!selectedChat) return <WelcomeChatScreen />;
+};
