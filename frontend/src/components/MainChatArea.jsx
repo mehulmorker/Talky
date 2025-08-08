@@ -41,9 +41,9 @@ export const MainChatArea = ({ selectedChat, token, user }) => {
           Loading messages...
         </div>
       ) : (
-        <MessageArea messages={messages} user={user}/>
+        <MessageArea messages={messages} user={user} />
       )}
-      <MessageInput />
+      <MessageInput selectedChat={selectedChat} token={token} />
     </div>
   );
 };
