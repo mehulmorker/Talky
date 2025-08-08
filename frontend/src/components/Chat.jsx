@@ -8,7 +8,7 @@ export const Chat = () => {
   const [selectedChat, setSelectedChat] = useState(null);
   const [conversations, setConversations] = useState([]);
 
-  const fetchConversations = async () => {
+  const fetchConversations = async (selectId = null) => {
     try {
       const res = await fetch("http://localhost:5001/api/chat/conversations", {
         headers: { Authorization: `Bearer ${token}` },
@@ -24,6 +24,10 @@ export const Chat = () => {
       }));
 
       setConversations(userConversations);
+      if (selectId) {
+        const found = userConversations.find((c) => c._id === selectId);
+        if (found) setSelectedChat(found);
+      }
     } catch (error) {
       console.log(error);
     }
@@ -33,12 +37,17 @@ export const Chat = () => {
     fetchConversations();
   }, [token]);
 
+  const handleConversationCreated = (conversation) => {
+    fetchConversations(conversation._id);
+  };
+
   return (
     <div className="flex h-full overflow-hidden">
       <LeftSidebar
         conversations={conversations}
         setSelectedChat={setSelectedChat}
         selectedChat={selectedChat}
+        onConversationCreated={handleConversationCreated}
       />
       <MainChatArea selectedChat={selectedChat} token={token} user={user} />
     </div>

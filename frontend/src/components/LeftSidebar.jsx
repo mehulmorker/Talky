@@ -7,11 +7,12 @@ export const LeftSidebar = ({
   conversations,
   setSelectedChat,
   selectedChat,
+  onConversationCreated,
 }) => {
   return (
     <div className="bg-white w-80 border-r border-gray-200 flex flex-col">
       {/* Header with action buttons: User Search Button & Model*/}
-      <UserSearch />
+      <UserSearch onConversationCreated={onConversationCreated} />
       {/* Search Bar */}
       <LeftSidebarSearch />
       {/* Conversations List */}

@@ -1,8 +1,64 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FaUserPlus } from "react-icons/fa";
+import { useAuth } from "../context/AuthContext";
 
-export const UserSearch = () => {
+export const UserSearch = ({ onConversationCreated }) => {
+  const { token } = useAuth();
   const [showUserSearch, setShowUserSearch] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+  const [searchLoading, setSearchLoading] = useState(false);
+
+  const fetchSearchResults = async () => {
+    try {
+      if (!showUserSearch || searchQuery.trim().length < 2) {
+        setSearchResults([]);
+        return;
+      }
+      setSearchLoading(true);
+      const res = await fetch(
+        `http://localhost:5001/api/users/search?q=${encodeURIComponent(
+          searchQuery
+        )}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      const data = await res.json();
+      setSearchResults(data.users || []);
+      setSearchLoading(false);
+    } catch (error) {
+      setSearchLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchSearchResults();
+  }, [searchQuery, showUserSearch, token]);
+
+  const handleStartConversation = async (user) => {
+    try {
+      const res = await fetch("http://localhost:5001/api/chat/conversations", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ participantId: user._id }),
+      });
+      const data = await res.json();
+      if (data.success && data.conversation) {
+        setShowUserSearch(false);
+        setSearchQuery("");
+        setSearchResults([]);
+        if (onConversationCreated) onConversationCreated(data.conversation);
+      }
+    } catch (err) {
+      // Optionally show error
+    }
+  };
+
   return (
     <>
       {/* Search Button */}
@@ -30,171 +86,55 @@ export const UserSearch = () => {
               type="text"
               placeholder="Type a name or email..."
               className="w-full px-4 py-2 border border-gray-300 rounded-lg mb-4"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
               autoFocus
             />
+            {searchLoading && (
+              <div className="text-gray-400 text-sm mb-2">Searching...</div>
+            )}
             {/* search user list */}
             <div className="max-h-60 overflow-y-auto">
-              {/* MOCK */}
-              <div className="flex items-center justify-between p-2 rounded hover:bg-gray-100 cursor-pointer transition-colors">
-                <div className="flex items-center space-x-3">
-                  <img
-                    src="https://prepsec.org/wp-content/uploads/2017/09/unknown-person-icon-Image-from.png"
-                    alt="https://prepsec.org/wp-content/uploads/2017/09/unknown-person-icon-Image-from.png"
-                    className="w-8 h-8 rounded-full"
-                  />
+              {searchResults.length === 0 && !searchLoading && (
+                <div className="text-gray-500 text-sm">No users found.</div>
+              )}
 
-                  <div>
-                    <div className="text-sm font-medium text-gray-900">
-                      Mehul Morker
+              {searchResults.map((user) => (
+                <div
+                  key={user._id}
+                  className="flex items-center justify-between p-2 rounded hover:bg-gray-100 cursor-pointer transition-colors"
+                  onClick={() => handleStartConversation(user)}
+                >
+                  <div className="flex items-center space-x-3">
+                    {user.picture ? (
+                      <img
+                        src={user.picture}
+                        alt={user.name}
+                        className="w-8 h-8 rounded-full"
+                      />
+                    ) : (
+                      <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
+                        <span className="text-xs font-medium text-gray-600">
+                          {user.name
+                            .split(" ")
+                            .map((n) => n[0])
+                            .join("")}
+                        </span>
+                      </div>
+                    )}
+
+                    <div>
+                      <div className="text-sm font-medium text-gray-900">
+                        {user.name}
+                      </div>
+                      <div className="text-xs text-gray-500">{user.email}</div>
                     </div>
-                    <div className="text-xs text-gray-500">abc@cm.com</div>
                   </div>
+                  <button className="px-3 py-1 bg-blue-500 text-white text-xs rounded hover:bg-blue-600 transition-colors">
+                    Start Chat
+                  </button>
                 </div>
-                <button className="px-3 py-1 bg-blue-500 text-white text-xs rounded hover:bg-blue-600 transition-colors">
-                  Start Chat
-                </button>
-              </div>
-
-              <div className="flex items-center justify-between p-2 rounded hover:bg-gray-100 cursor-pointer transition-colors">
-                <div className="flex items-center space-x-3">
-                  <img
-                    src="https://prepsec.org/wp-content/uploads/2017/09/unknown-person-icon-Image-from.png"
-                    alt="https://prepsec.org/wp-content/uploads/2017/09/unknown-person-icon-Image-from.png"
-                    className="w-8 h-8 rounded-full"
-                  />
-
-                  <div>
-                    <div className="text-sm font-medium text-gray-900">
-                      Mehul Morker
-                    </div>
-                    <div className="text-xs text-gray-500">abc@cm.com</div>
-                  </div>
-                </div>
-                <button className="px-3 py-1 bg-blue-500 text-white text-xs rounded hover:bg-blue-600 transition-colors">
-                  Start Chat
-                </button>
-              </div>
-
-              <div className="flex items-center justify-between p-2 rounded hover:bg-gray-100 cursor-pointer transition-colors">
-                <div className="flex items-center space-x-3">
-                  <img
-                    src="https://prepsec.org/wp-content/uploads/2017/09/unknown-person-icon-Image-from.png"
-                    alt="https://prepsec.org/wp-content/uploads/2017/09/unknown-person-icon-Image-from.png"
-                    className="w-8 h-8 rounded-full"
-                  />
-
-                  <div>
-                    <div className="text-sm font-medium text-gray-900">
-                      Mehul Morker
-                    </div>
-                    <div className="text-xs text-gray-500">abc@cm.com</div>
-                  </div>
-                </div>
-                <button className="px-3 py-1 bg-blue-500 text-white text-xs rounded hover:bg-blue-600 transition-colors">
-                  Start Chat
-                </button>
-              </div>
-
-              <div className="flex items-center justify-between p-2 rounded hover:bg-gray-100 cursor-pointer transition-colors">
-                <div className="flex items-center space-x-3">
-                  <img
-                    src="https://prepsec.org/wp-content/uploads/2017/09/unknown-person-icon-Image-from.png"
-                    alt="https://prepsec.org/wp-content/uploads/2017/09/unknown-person-icon-Image-from.png"
-                    className="w-8 h-8 rounded-full"
-                  />
-
-                  <div>
-                    <div className="text-sm font-medium text-gray-900">
-                      Mehul Morker
-                    </div>
-                    <div className="text-xs text-gray-500">abc@cm.com</div>
-                  </div>
-                </div>
-                <button className="px-3 py-1 bg-blue-500 text-white text-xs rounded hover:bg-blue-600 transition-colors">
-                  Start Chat
-                </button>
-              </div>
-
-              <div className="flex items-center justify-between p-2 rounded hover:bg-gray-100 cursor-pointer transition-colors">
-                <div className="flex items-center space-x-3">
-                  <img
-                    src="https://prepsec.org/wp-content/uploads/2017/09/unknown-person-icon-Image-from.png"
-                    alt="https://prepsec.org/wp-content/uploads/2017/09/unknown-person-icon-Image-from.png"
-                    className="w-8 h-8 rounded-full"
-                  />
-
-                  <div>
-                    <div className="text-sm font-medium text-gray-900">
-                      Mehul Morker
-                    </div>
-                    <div className="text-xs text-gray-500">abc@cm.com</div>
-                  </div>
-                </div>
-                <button className="px-3 py-1 bg-blue-500 text-white text-xs rounded hover:bg-blue-600 transition-colors">
-                  Start Chat
-                </button>
-              </div>
-
-              <div className="flex items-center justify-between p-2 rounded hover:bg-gray-100 cursor-pointer transition-colors">
-                <div className="flex items-center space-x-3">
-                  <img
-                    src="https://prepsec.org/wp-content/uploads/2017/09/unknown-person-icon-Image-from.png"
-                    alt="https://prepsec.org/wp-content/uploads/2017/09/unknown-person-icon-Image-from.png"
-                    className="w-8 h-8 rounded-full"
-                  />
-
-                  <div>
-                    <div className="text-sm font-medium text-gray-900">
-                      Mehul Morker
-                    </div>
-                    <div className="text-xs text-gray-500">abc@cm.com</div>
-                  </div>
-                </div>
-                <button className="px-3 py-1 bg-blue-500 text-white text-xs rounded hover:bg-blue-600 transition-colors">
-                  Start Chat
-                </button>
-              </div>
-
-              <div className="flex items-center justify-between p-2 rounded hover:bg-gray-100 cursor-pointer transition-colors">
-                <div className="flex items-center space-x-3">
-                  <img
-                    src="https://prepsec.org/wp-content/uploads/2017/09/unknown-person-icon-Image-from.png"
-                    alt="https://prepsec.org/wp-content/uploads/2017/09/unknown-person-icon-Image-from.png"
-                    className="w-8 h-8 rounded-full"
-                  />
-
-                  <div>
-                    <div className="text-sm font-medium text-gray-900">
-                      Mehul Morker
-                    </div>
-                    <div className="text-xs text-gray-500">abc@cm.com</div>
-                  </div>
-                </div>
-                <button className="px-3 py-1 bg-blue-500 text-white text-xs rounded hover:bg-blue-600 transition-colors">
-                  Start Chat
-                </button>
-              </div>
-
-              <div className="flex items-center justify-between p-2 rounded hover:bg-gray-100 cursor-pointer transition-colors">
-                <div className="flex items-center space-x-3">
-                  <img
-                    src="https://prepsec.org/wp-content/uploads/2017/09/unknown-person-icon-Image-from.png"
-                    alt="https://prepsec.org/wp-content/uploads/2017/09/unknown-person-icon-Image-from.png"
-                    className="w-8 h-8 rounded-full"
-                  />
-
-                  <div>
-                    <div className="text-sm font-medium text-gray-900">
-                      Mehul Morker
-                    </div>
-                    <div className="text-xs text-gray-500">abc@cm.com</div>
-                  </div>
-                </div>
-                <button className="px-3 py-1 bg-blue-500 text-white text-xs rounded hover:bg-blue-600 transition-colors">
-                  Start Chat
-                </button>
-              </div>
-              {/* MOCK */}
+              ))}
             </div>
           </div>
         </div>
