@@ -40,7 +40,7 @@ export const Chat = () => {
         setSelectedChat={setSelectedChat}
         selectedChat={selectedChat}
       />
-      <MainChatArea selectedChat={selectedChat} />
+      <MainChatArea selectedChat={selectedChat} token={token} user={user} />
     </div>
   );
 };

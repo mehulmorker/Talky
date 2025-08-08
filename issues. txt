@@ -2,6 +2,7 @@ frontend
 - scroll bar is showing on chat screen
 - when open model for medium screen, UI/UX not good
 - online status is static
+- seprate apis services/api folder
 
 feature
 - add emoji support
