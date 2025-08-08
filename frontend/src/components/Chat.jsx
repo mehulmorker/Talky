@@ -34,7 +34,7 @@ export const Chat = () => {
   }, [token]);
 
   return (
-    <div className="flex h-full">
+    <div className="flex h-full overflow-hidden">
       <LeftSidebar
         conversations={conversations}
         setSelectedChat={setSelectedChat}

@@ -1,3 +1,9 @@
 frontend
 - scroll bar is showing on chat screen
 - when open model for medium screen, UI/UX not good
+- online status is static
+
+feature
+- add emoji support
+- document
+- video call
