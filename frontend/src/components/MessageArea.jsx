@@ -1,6 +1,10 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 
 export const MessageArea = ({ messages, user }) => {
+  const bottomRef = useRef(null);
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
   return (
     <div className="p-6 flex-1 overflow-y-auto">
       <div className="space-y-4">
@@ -32,6 +36,7 @@ export const MessageArea = ({ messages, user }) => {
             </div>
           </div>
         ))}
+        <div ref={bottomRef} />
       </div>
     </div>
   );

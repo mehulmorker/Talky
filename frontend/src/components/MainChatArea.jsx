@@ -19,7 +19,6 @@ export const MainChatArea = ({ selectedChat, token, user }) => {
         }
       );
       const data = await res.json();
-      console.log("🔍 messages data:", JSON.stringify(messages));
       setMessages(data.messages || []);
       setLoading(false);
     } catch (error) {
