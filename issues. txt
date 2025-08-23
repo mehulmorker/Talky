@@ -3,6 +3,7 @@ frontend
 - when open model for medium screen, UI/UX not good
 - online status is static
 - seprate apis services/api folder
+- when new message arrive side bar should update. new message conversation should be on top
 
 feature
 - add emoji support

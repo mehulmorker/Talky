@@ -9,8 +9,9 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 import { AuthProvider } from "./context/AuthContext";
 import { PublicRoute } from "./components/PublicRoute";
 import { ProtectedRoute } from "./components/ProtectedRoute";
+import { SocketProvider } from "./context/SocketContext";
 
-const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID
+const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
 const router = createBrowserRouter([
   {
@@ -40,9 +41,11 @@ const router = createBrowserRouter([
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <AuthProvider>
-      <GoogleOAuthProvider clientId={clientId}>
-        <RouterProvider router={router} />
-      </GoogleOAuthProvider>
+      <SocketProvider>
+        <GoogleOAuthProvider clientId={clientId}>
+          <RouterProvider router={router} />
+        </GoogleOAuthProvider>
+      </SocketProvider>
     </AuthProvider>
   </StrictMode>
 );
