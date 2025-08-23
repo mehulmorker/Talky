@@ -3,10 +3,21 @@ import { WelcomeChatScreen } from "./WelcomeChatScreen";
 import { ChatHeader } from "./ChatHeader";
 import { MessageArea } from "./MessageArea";
 import { MessageInput } from "./MessageInput";
+import { useSocket } from "../context/SocketContext";
 
 export const MainChatArea = ({ selectedChat, token, user }) => {
+  const { joinConversation, leaveConversation } = useSocket();
   const [loading, setLoading] = useState(false);
   const [messages, setMessages] = useState([]);
+
+  useEffect(() => {
+    if (selectedChat) {
+      joinConversation(selectedChat._id);
+      return () => {
+        leaveConversation(selectedChat._id);
+      };
+    }
+  }, [selectedChat]);
 
   const fetchMessages = async () => {
     try {

@@ -2,11 +2,45 @@ import React, { useEffect, useState } from "react";
 import { LeftSidebar } from "./LeftSidebar";
 import { MainChatArea } from "./MainChatArea";
 import { useAuth } from "../context/AuthContext";
+import { useSocket } from "../context/SocketContext";
 
 export const Chat = () => {
   const { user, token } = useAuth();
+  const { onReceiveMessage } = useSocket();
   const [selectedChat, setSelectedChat] = useState(null);
   const [conversations, setConversations] = useState([]);
+
+  useEffect(() => {
+    const handleNewMessage = (message) => {
+      console.log("🔔 WebSocket message received:", message);
+      setConversations((prev) => {
+        console.log("🔄 Updating conversations from:", prev);
+        const updated = prev.map((conv) => {
+          if (message.conversationId === conv._id) {
+            return {
+              ...conv,
+              lastMessage: {
+                content: message.content,
+                createdAt: message.createdAt,
+                sender: message.sender,
+              },
+              updatedAt: message.createdAt,
+            };
+          }
+          return conv;
+        });
+        console.log({ updated });
+        const sorted = updated.sort((a, b) => {
+          const dateA = new Date(a.updatedAt || a.lastMessage?.createdAt || 0);
+          const dateB = new Date(b.updatedAt || b.lastMessage?.createdAt || 0);
+          return dateB - dateA;
+        });
+        console.log("📋 Updated conversations:", sorted);
+        return sorted;
+      });
+    };
+    onReceiveMessage(handleNewMessage);
+  }, [onReceiveMessage]);
 
   const fetchConversations = async (selectId = null) => {
     try {
