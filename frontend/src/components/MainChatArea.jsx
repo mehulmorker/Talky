@@ -5,10 +5,16 @@ import { MessageArea } from "./MessageArea";
 import { MessageInput } from "./MessageInput";
 import { useSocket } from "../context/SocketContext";
 
-export const MainChatArea = ({ selectedChat, token, user }) => {
+export const MainChatArea = ({
+  selectedChat,
+  token,
+  user,
+  messages,
+  setMessages,
+}) => {
   const { joinConversation, leaveConversation } = useSocket();
   const [loading, setLoading] = useState(false);
-  const [messages, setMessages] = useState([]);
+  // const [messages, setMessages] = useState([]); need to put this state change in parent
 
   useEffect(() => {
     if (selectedChat) {
@@ -18,7 +24,6 @@ export const MainChatArea = ({ selectedChat, token, user }) => {
       };
     }
   }, [selectedChat]);
-
   const fetchMessages = async () => {
     try {
       if (!selectedChat) return;

@@ -9,12 +9,15 @@ export const Chat = () => {
   const { onReceiveMessage } = useSocket();
   const [selectedChat, setSelectedChat] = useState(null);
   const [conversations, setConversations] = useState([]);
+  const [messages, setMessages] = useState([]);
+
+  useEffect(() => {
+    fetchConversations();
+  }, [token]);
 
   useEffect(() => {
     const handleNewMessage = (message) => {
-      console.log("🔔 WebSocket message received:", message);
       setConversations((prev) => {
-        console.log("🔄 Updating conversations from:", prev);
         const updated = prev.map((conv) => {
           if (message.conversationId === conv._id) {
             return {
@@ -29,18 +32,22 @@ export const Chat = () => {
           }
           return conv;
         });
-        console.log({ updated });
+
         const sorted = updated.sort((a, b) => {
           const dateA = new Date(a.updatedAt || a.lastMessage?.createdAt || 0);
           const dateB = new Date(b.updatedAt || b.lastMessage?.createdAt || 0);
           return dateB - dateA;
         });
-        console.log("📋 Updated conversations:", sorted);
+
         return sorted;
       });
+
+      if (message.conversationId === selectedChat?._id) {
+        setMessages((prev) => [...prev, message]);
+      }
     };
     onReceiveMessage(handleNewMessage);
-  }, [onReceiveMessage]);
+  }, [conversations.length, onReceiveMessage, selectedChat]);
 
   const fetchConversations = async (selectId = null) => {
     try {
@@ -48,7 +55,7 @@ export const Chat = () => {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
-      // console.log("🔍 Conversations data:", JSON.stringify(data));
+
       const userConversations = (data.conversations || []).map((conv) => ({
         ...conv,
         participants: conv.participants.map((p) => ({
@@ -60,16 +67,13 @@ export const Chat = () => {
       setConversations(userConversations);
       if (selectId) {
         const found = userConversations.find((c) => c._id === selectId);
+
         if (found) setSelectedChat(found);
       }
     } catch (error) {
       console.log(error);
     }
   };
-
-  useEffect(() => {
-    fetchConversations();
-  }, [token]);
 
   const handleConversationCreated = (conversation) => {
     fetchConversations(conversation._id);
@@ -83,7 +87,13 @@ export const Chat = () => {
         selectedChat={selectedChat}
         onConversationCreated={handleConversationCreated}
       />
-      <MainChatArea selectedChat={selectedChat} token={token} user={user} />
+      <MainChatArea
+        selectedChat={selectedChat}
+        token={token}
+        user={user}
+        messages={messages}
+        setMessages={setMessages}
+      />
     </div>
   );
 };
