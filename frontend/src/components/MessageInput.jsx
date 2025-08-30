@@ -1,12 +1,33 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
-export const MessageInput = ({ selectedChat, token }) => {
+export const MessageInput = ({
+  selectedChat,
+  token,
+  onTypingStart,
+  onTypingStop,
+}) => {
   const [value, setValue] = useState("");
   const [loading, setLoading] = useState(false);
+  const typingTimeoutRef = useRef(null);
 
   const handleInputChange = (e) => {
     const newValue = e.target.value;
     setValue(newValue);
+    if (onTypingStart && newValue.trim()) {
+      onTypingStart();
+
+      // Clear existing timeout
+      if (typingTimeoutRef.current) {
+        clearTimeout(typingTimeoutRef.current);
+      }
+
+      // Set new timeout to stop typing indicator
+      typingTimeoutRef.current = setTimeout(() => {
+        if (onTypingStop) onTypingStop();
+      }, 12000);
+    } else if (onTypingStop && !newValue.trim()) {
+      onTypingStop();
+    }
   };
 
   const handleSend = async (e) => {
@@ -32,6 +53,14 @@ export const MessageInput = ({ selectedChat, token }) => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    return () => {
+      if (typingTimeoutRef.current) {
+        clearTimeout(typingTimeoutRef.current);
+      }
+    };
+  }, []);
 
   return (
     <form

@@ -16,6 +16,8 @@ export const SocketProvider = ({ children }) => {
   const { token, user } = useAuth();
   const socketRef = useRef(null);
   const messageCallbackRef = useRef(null);
+  const typingCallbackRef = useRef(null);
+  const stopTypingCallbackRef = useRef(null);
 
   useEffect(() => {
     if (!token || !user) {
@@ -54,6 +56,19 @@ export const SocketProvider = ({ children }) => {
       }
     });
 
+    socketRef.current.on("user_typing", (data) => {
+      if (typingCallbackRef.current) {
+        typingCallbackRef.current(data);
+      }
+    });
+
+    socketRef.current.on("user_stop_typing", (data) => {
+      if (stopTypingCallbackRef.current) {
+        stopTypingCallbackRef.current(data);
+      }
+    });
+
+
     return () => {
       if (socketRef.current) {
         socketRef.current.disconnect();
@@ -78,11 +93,35 @@ export const SocketProvider = ({ children }) => {
     messageCallbackRef.current = callback;
   };
 
+  const startTyping = (data) => {
+    if (socketRef.current) {
+      socketRef.current.emit("typing_start", data);
+    }
+  };
+
+  const stopTyping = (data) => {
+    if (socketRef.current) {
+      socketRef.current.emit("typing_stop", data);
+    }
+  };
+
+  const onUserTyping = (callback) => {
+    typingCallbackRef.current = callback;
+  };
+
+  const onUserStopTyping = (callback) => {
+    stopTypingCallbackRef.current = callback;
+  };
+
   const value = {
     socket: socketRef.current,
     onReceiveMessage,
     joinConversation,
     leaveConversation,
+    startTyping,
+    stopTyping,
+    onUserTyping,
+    onUserStopTyping,
   };
 
   return (
