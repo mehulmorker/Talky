@@ -141,4 +141,53 @@ router.post("/conversations", protect, async (req, res) => {
   }
 });
 
+router.post("/groups", protect, async (req, res) => {
+  try {
+    const { name, participants } = req.body;
+
+    // Ensure the requesting user is always included
+    let allParticipants = [req.user._id];
+    if (participants && Array.isArray(participants)) {
+      participants.forEach((pId) => {
+        if (!allParticipants.includes(pId.toString())) {
+          // Convert to string for comparison
+          allParticipants.push(pId);
+        }
+      });
+    }
+
+    // Basic validation for participants (e.g., ensure valid ObjectIds if needed)
+    // For now, we'll trust the provided userIds or assume Mongoose will handle casting errors.
+
+    if (allParticipants.length < 2) {
+      return res
+        .status(400)
+        .json({
+          success: false,
+          message:
+            "A group chat requires at least two participants including yourself.",
+        });
+    }
+
+    const newGroupConversation = new Conversation({
+      name: name || null, // Allow name to be optional
+      isGroup: true,
+      participants: allParticipants,
+    });
+
+    await newGroupConversation.save();
+
+    // Populate participants for the response
+    await newGroupConversation.populate("participants", "name email picture");
+
+    res.status(201).json({ success: true, conversation: newGroupConversation });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to create group conversation",
+      error: error.message,
+    });
+  }
+});
+
 export default router;
