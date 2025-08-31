@@ -45,7 +45,6 @@ export const MainChatArea = ({
       setMessages(data.messages || []);
       setLoading(false);
     } catch (error) {
-      console.log(error);
       setLoading(false);
     }
   };

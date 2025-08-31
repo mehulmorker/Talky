@@ -74,7 +74,6 @@ export const Chat = () => {
       console.log(error);
     }
   };
-
   const handleConversationCreated = (conversation) => {
     fetchConversations(conversation._id);
   };

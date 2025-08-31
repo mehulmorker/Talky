@@ -24,7 +24,7 @@ export const MessageInput = ({
       // Set new timeout to stop typing indicator
       typingTimeoutRef.current = setTimeout(() => {
         if (onTypingStop) onTypingStop();
-      }, 12000);
+      }, 2000);
     } else if (onTypingStop && !newValue.trim()) {
       onTypingStop();
     }
