@@ -170,7 +170,7 @@ router.post("/groups", protect, async (req, res) => {
     }
 
     const newGroupConversation = new Conversation({
-      name: name || null, // Allow name to be optional
+      name: name || 'You', // Allow name to be optional
       isGroup: true,
       participants: allParticipants,
     });

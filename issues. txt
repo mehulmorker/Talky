@@ -1,11 +1,19 @@
 frontend
 - scroll bar is showing on chat screen
 - when open model for medium screen, UI/UX not good
-- online status is static
 - seprate apis services/api folder
-- when new message arrive side bar should update. new message conversation should be on top
+- when new message arrive side bar should update. new message conversation should be on top [imp]
+- online status is static [imp]
+- register and login api, don't want to rely on google login only [imp]
+- responsive design [imp]
+- update group name [imp]
+- chat & group delete [imp]
+- update profile (password) [imp]
+- search in conversations [imp]
 
 feature
 - add emoji support
 - document
 - video call
+- only able to chat when other user accept 
+
